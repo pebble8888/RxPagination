@@ -8,12 +8,19 @@ extension Reactive where Base: UIScrollView {
                 guard let scrollView = base else {
                     return Observable.empty()
                 }
-
-                let visibleHeight = scrollView.frame.height - scrollView.contentInset.top - scrollView.contentInset.bottom
-                let y = contentOffset.y + scrollView.contentInset.top
-                let threshold = max(0.0, scrollView.contentSize.height - visibleHeight)
-
-                return y > threshold ? Observable.just() : Observable.empty()
+                return scrollView.isReachedBottom ? Observable.just() : Observable.empty()
             }
+    }
+}
+
+extension UIScrollView {
+    fileprivate var isReachedBottom: Bool {
+        let visibleHeight
+            = frame.height
+            - contentInset.top
+            - contentInset.bottom
+        let y = contentOffset.y + contentInset.top
+        let threshold = max(0.0, contentSize.height - visibleHeight)
+        return threshold < y
     }
 }
